@@ -1,23 +1,30 @@
+import serial
 
 
 class Sektor:
 
-    def start():
+    def __init__(self):
+        self.gps = serial.Serial('/dev/ttyS0', baudrate=9600)
+
+    def start(self):
+        print(self.gps)
+
+    def get_locations(self):
         pass
 
-    def get_locations():
+    def save_location(self):
         pass
 
-    def save_location():
+    def do_grease(self):
         pass
 
-    def do_grease():
+    def check_distance(self):
         pass
 
-    def check_distance():
-        pass
-
-    def turn_on_motor():
+    def turn_on_motor(self):
         pass
 
 
+if __name__ == '__main__':
+    s = Sektor()
+    s.start()
