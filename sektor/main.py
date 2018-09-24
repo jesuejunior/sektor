@@ -7,7 +7,9 @@ class Sektor:
         self.gps = serial.Serial('/dev/ttyS0', baudrate=9600)
 
     def start(self):
-        print(self.gps)
+        while True:
+            line = self.gps.readline()
+            print(line)
 
     def get_locations(self):
         pass
