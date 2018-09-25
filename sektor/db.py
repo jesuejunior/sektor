@@ -13,8 +13,8 @@ class DB:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                """CREATE TABLE IF NOT EXISTS track (            
-                lat DOUBLE PRECISION, lat_cardinal VARCHAR(1), lon DOUBLE PRECISION, lon_cardinal VARCHAR(1),
+                """CREATE TABLE IF NOT EXISTS track (time INTEGER,
+                lat DOUBLE PRECISION, lon DOUBLE PRECISION,
                 speed INT, distance INT, oil BOOLEAN, created_at DATETIME)"""
             )
             conn.commit()
@@ -27,24 +27,14 @@ class DB:
         cursor = cursor.execute("""SELECT * FROM track WHERE distance > 300 """)
         return cursor.fetchone()
 
-    def save(lat, lat_cardinal, lon, lon_cardinal, speed, distance, oil=False):
+    def save(time, lat, lon, speed, distance, oil=False):
         conn = DB.connect()
         cursor = conn.cursor()
-
         created_at = datetime.now()
         try:
             cursor.execute(
-                """INSERT INTO track VALUES (?,?,?,?,?,?,?,?)""",
-                (
-                    lat,
-                    lat_cardinal,
-                    lon,
-                    lon_cardinal,
-                    speed,
-                    distance,
-                    oil,
-                    created_at,
-                ),
+                """INSERT INTO track VALUES (?,?,?,?,?,?,?)""",
+                (time, lat, lon, speed, distance, oil, created_at),
             )
             conn.commit()
         except Exception as ex:
