@@ -1,6 +1,5 @@
 # encoding: utf-8
 from gps3 import gps3
-import copy
 from math import radians, cos, sin, asin, sqrt
 
 from db import DB
