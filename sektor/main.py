@@ -41,16 +41,15 @@ class Sektor:
                     old_location = GPS(**saved_location.__dict__)
 
     def get_locations(gps_data):
-        print("ta chegando aqui")
-        if "time" in gps_data:
-            print(gps_data["time"])
+        if hasattr(gps_data, "time"):
+            print(gps_data.time)
 
-        if "speed" in gps_data:
+        if hasattr(gps_data, "speed"):
             return GPS(
-                lat=gps_data["lat"],
-                lon=gps_data["lon"],
-                speed=gps_data["speed"],
-                time=gps_data["time"]
+                lat=gps_data.lat,
+                lon=gps_data.lon,
+                speed=gps_data.speed,
+                time=gps_data.time
             )
 
         return None
