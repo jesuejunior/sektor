@@ -1,8 +1,18 @@
 # encoding: utf-8
 from gps3 import gps3
+import copy
 from math import radians, cos, sin, asin, sqrt
 
 from db import DB
+
+
+class GPS:
+    def __init__(self, lat, lon, speed, time, distance=0, oil=False):
+        self.lat = lat
+        self.speed = speed
+        self.distance = distance
+        self.time = time
+        self.oil = oil
 
 
 class Sektor:
@@ -13,7 +23,12 @@ class Sektor:
         gps_socket.connect()
         gps_socket.watch()
 
-        old_location = {"lat": 0, "lon": 0}
+        old_location = GPS(
+            lat=0,
+            lon=0,
+            speed=0,
+            time=0
+        )
 
         for new_data in gps_socket:
             if new_data:
@@ -24,10 +39,7 @@ class Sektor:
                 saved_location = Sektor.save_location(current_location, old_location)
 
                 if saved_location:
-                    old_location = {
-                        "lat": current_location["lat"],
-                        "lon": current_location["lon"]
-                    }
+                    old_location = GPS(**saved_location.__dict__)
 
     def get_locations(gps_data):
         print("ta chegando aqui")
@@ -35,11 +47,12 @@ class Sektor:
             print(gps_data["time"])
 
         if "speed" in gps_data:
-            return {
-                "latitude": gps_data["lat"],
-                "longitude": gps_data["lon"],
-                "speed": gps_data["speed"],
-            }
+            return GPS(
+                lat=gps_data["lat"],
+                lon=gps_data["lon"],
+                speed=gps_data["speed"],
+                time=gps_data["time"]
+            )
 
         return None
 
@@ -47,14 +60,15 @@ class Sektor:
         try:
             distance = Sektor.calc_distance(gps_data, last_location)
             location_data = {
-                "lat": gps_data["lat"],
-                "lon": gps_data["lon"],
-                "speed": gps_data["speed"],
+                "lat": gps_data.lat,
+                "lon": gps_data.lon,
+                "speed": gps_data.speed,
+                "time": gps_data.time,
                 "distance": distance,
                 "oil": Sektor.do_grease(distance)
             }
 
-            return location_data if DB.save(**location_data) else False
+            return GPS(**location_data) if DB.save(**location_data) else False
         except Exception:
             return False
 
@@ -77,10 +91,10 @@ class Sektor:
         lon1, lat1, lon2, lat2 = map(
             radians,
             [
-                coordinates1["lon"],
-                coordinates1["lat"],
-                coordinates2["lon"],
-                coordinates2["lat"],
+                coordinates1.lon,
+                coordinates1.lat,
+                coordinates2.lon,
+                coordinates2.lat,
             ],
         )
 
