@@ -5,9 +5,8 @@ from .db import DB
 
 
 class Sektor:
-
     def start():
-        session = gps.gps('localhost', '2947')
+        session = gps.gps("localhost", "2947")
         session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
 
         while True:
@@ -24,12 +23,12 @@ class Sektor:
                 print("GPSD has terminated")
 
     def get_locations(report):
-        if report['class'] == 'TPV':
-            if hasattr(report, 'speed'):
+        if report["class"] == "TPV":
+            if hasattr(report, "speed"):
                 return {
-                    'latitude': report.lat,
-                    'longitude': report.lon,
-                    'speed': report.speed,
+                    "latitude": report.lat,
+                    "longitude": report.lon,
+                    "speed": report.speed,
                 }
         return None
 
@@ -62,5 +61,5 @@ class Sektor:
         return c * r
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Sektor.start()
