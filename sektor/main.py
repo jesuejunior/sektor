@@ -22,12 +22,7 @@ class Sektor:
         gps_socket.connect()
         gps_socket.watch()
 
-        old_location = GPS(
-            lat=0,
-            lon=0,
-            speed=0,
-            time=0
-        )
+        old_location = GPS(lat=0, lon=0, speed=0, time=0)
 
         for new_data in gps_socket:
             if new_data:
@@ -49,32 +44,33 @@ class Sektor:
                 lat=gps_data.lat,
                 lon=gps_data.lon,
                 speed=gps_data.speed,
-                time=gps_data.time
+                time=gps_data.time,
             )
 
         return None
 
+    def do_grease(distancei, speed):
+        if distance > 300 and speed <= 20:
+            Sektor.turn_on_motor()
+            return True
+        else:
+            return False
+
     def save_location(gps_data, last_location):
         try:
             distance = Sektor.calc_distance(gps_data, last_location)
+            speed = gps_data.speed
             location_data = {
                 "lat": gps_data.lat,
                 "lon": gps_data.lon,
-                "speed": gps_data.speed,
+                "speed": speed,
                 "time": gps_data.time,
                 "distance": distance,
-                "oil": Sektor.do_grease(distance)
+                "oil": Sektor.do_grease(distance, speed),
             }
 
             return GPS(**location_data) if DB.save(**location_data) else False
         except Exception:
-            return False
-
-    def do_grease(distance):
-        if distance > 300:
-            Sektor.turn_on_motor()
-            return True
-        else:
             return False
 
     def turn_on_motor():
@@ -88,12 +84,7 @@ class Sektor:
         # convert decimal degrees to radians
         lon1, lat1, lon2, lat2 = map(
             radians,
-            [
-                coordinates1.lon,
-                coordinates1.lat,
-                coordinates2.lon,
-                coordinates2.lat,
-            ],
+            [coordinates1.lon, coordinates1.lat, coordinates2.lon, coordinates2.lat],
         )
 
         # haversine formula
