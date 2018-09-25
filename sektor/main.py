@@ -5,12 +5,6 @@ from math import radians, cos, sin, asin, sqrt
 from db import DB
 
 
-def clear_screen():
-    print(chr(27) + '[2j')
-    # print('\033c')
-    # print('\x1bc')
-
-
 class Sektor:
 
     def start():
@@ -36,8 +30,6 @@ class Sektor:
                 if saved_location:
                     old_location['lat'] = current_location['lat']
                     old_location['lon'] = current_location['lon']
-
-            clear_screen()
 
     def get_locations(gps_data):
         print('ta chegando aqui')
