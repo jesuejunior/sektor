@@ -6,7 +6,6 @@ from db import DB
 
 
 class Sektor:
-
     def start():
         gps_socket = gps3.GPSDSocket()
         gps_stream = gps3.DataStream()
@@ -14,33 +13,32 @@ class Sektor:
         gps_socket.connect()
         gps_socket.watch()
 
-        old_location = {'lat': 0, 'lon': 0}
+        old_location = {"lat": 0, "lon": 0}
 
         for new_data in gps_socket:
             if new_data:
-                print('getting new data...')
+                print("getting new data...")
                 gps_stream.unpack(new_data)
                 current_location = Sektor.get_locations(gps_stream)
 
-                saved_location = Sektor.save_location(
-                    current_location,
-                    old_location
-                )
+                saved_location = Sektor.save_location(current_location, old_location)
 
                 if saved_location:
-                    old_location['lat'] = current_location['lat']
-                    old_location['lon'] = current_location['lon']
+                    old_location = {
+                        "lat": current_location["lat"],
+                        "lon": current_location["lon"]
+                    }
 
     def get_locations(gps_data):
-        print('ta chegando aqui')
-        if 'time' in gps_data:
-            print(gps_data['time'])
+        print("ta chegando aqui")
+        if "time" in gps_data:
+            print(gps_data["time"])
 
-        if 'speed' in gps_data:
+        if "speed" in gps_data:
             return {
-                'latitude': gps_data['lat'],
-                'longitude': gps_data['lon'],
-                'speed': gps_data['speed'],
+                "latitude": gps_data["lat"],
+                "longitude": gps_data["lon"],
+                "speed": gps_data["speed"],
             }
 
         return None
@@ -49,11 +47,11 @@ class Sektor:
         try:
             distance = Sektor.calc_distance(gps_data, last_location)
             location_data = {
-                'lat': gps_data['lat'],
-                'lon': gps_data['lon'],
-                'speed': gps_data['speed'],
-                'distance': distance,
-                'oil': Sektor.do_grease(distance)
+                "lat": gps_data["lat"],
+                "lon": gps_data["lon"],
+                "speed": gps_data["speed"],
+                "distance": distance,
+                "oil": Sektor.do_grease(distance)
             }
 
             return location_data if DB.save(**location_data) else False
@@ -62,13 +60,13 @@ class Sektor:
 
     def do_grease(distance):
         if distance > 300:
-            # method to inject oil on chains
+            Sektor.turn_on_motor()
             return True
         else:
             return False
 
-    def turn_on_motor(report):
-        pass
+    def turn_on_motor():
+        return False
 
     def calc_distance(coordinates1, coordinates2):
         """
@@ -76,12 +74,15 @@ class Sektor:
         on the earth (specified in decimal degrees)
         """
         # convert decimal degrees to radians
-        lon1, lat1, lon2, lat2 = map(radians, [
-            coordinates1['lon'],
-            coordinates1['lat'],
-            coordinates2['lon'],
-            coordinates2['lat']
-        ])
+        lon1, lat1, lon2, lat2 = map(
+            radians,
+            [
+                coordinates1["lon"],
+                coordinates1["lat"],
+                coordinates2["lon"],
+                coordinates2["lat"],
+            ],
+        )
 
         # haversine formula
         dlon = lon2 - lon1
@@ -92,5 +93,5 @@ class Sektor:
         return c * r
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Sektor.start()
