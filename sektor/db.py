@@ -39,6 +39,7 @@ class DB:
             conn.commit()
         except Exception as ex:
             print(ex)  # TO-DO: Use logger
+            return False
         finally:
             conn.close()
 

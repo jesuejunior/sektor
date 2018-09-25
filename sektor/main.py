@@ -1,44 +1,58 @@
-import gps
+# encoding: utf-8
+from gps3 import gps3
 from math import radians, cos, sin, asin, sqrt
 
-from .db import DB
+from db import DB
 
 
 class Sektor:
+
     def start():
-        session = gps.gps("localhost", "2947")
-        session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+        gps_socket = gps3.GPSDSocket()
+        gps_stream = gps3.DataStream()
 
-        while True:
-            try:
-                report = session.next()
-                location = Sektor.get_locations(report)
+        gps_socket.connect()
+        gps_socket.watch()
 
-            except KeyError:
-                pass
-            except KeyboardInterrupt:
-                quit()
-            except StopIteration:
-                session = None
-                print("GPSD has terminated")
+        for new_data in gps_socket:
+            if new_data:
+                gps_stream.unpack(new_data)
+                location = Sektor.get_locations(gps_stream)
 
-    def get_locations(report):
-        if report["class"] == "TPV":
-            if hasattr(report, "speed"):
-                return {
-                    "latitude": report.lat,
-                    "longitude": report.lon,
-                    "speed": report.speed,
-                }
+                saved_location = Sektor.save_location(location)
+
+    def get_locations(gps_data):
+        if hasattr(gps_data, 'time'):
+            print(gps_data.time)
+
+        if hasattr(gps_data, 'speed'):
+            return {
+                'latitude': gps_data.lat,
+                'longitude': gps_data.lon,
+                'speed': gps_data.speed,
+            }
+
         return None
 
-    def save_location(report):
-        DB.save(latitude=report)
+    def save_location(gps_data, last_location):
+        try:
+            distance = Sektor.check_distance(gps_data, last_location)
+            saved = DB.save(
+                lat=gps_data.lat,
+                lon=gps_data.lon,
+                speed=gps_data.speed,
+                distance=distance,
+                oil=distance > 300
+            )
 
-    def do_grease(report):
+            return saved
+        except Exception:
+            return False
+
+    def do_grease(gps_data):
         pass
 
-    def check_distance(report):
+    def check_distance(current_location, ):
         pass
 
     def turn_on_motor(report):
@@ -61,5 +75,5 @@ class Sektor:
         return c * r
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     Sektor.start()
