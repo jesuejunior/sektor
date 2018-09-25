@@ -61,15 +61,19 @@ class Sektor:
                 'lon': gps_data.lon,
                 'speed': gps_data.speed,
                 'distance': distance,
-                'oil': Sektor.do_grease(gps_data)
+                'oil': Sektor.do_grease(distance)
             }
 
             return location_data if DB.save(**location_data) else False
         except Exception:
             return False
 
-    def do_grease(gps_data, last_location):
-        gps_data.lat
+    def do_grease(distance):
+        if distance > 300:
+            # method to inject oil on chains
+            return True
+        else:
+            return False
 
     def turn_on_motor(report):
         pass
