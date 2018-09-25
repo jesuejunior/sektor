@@ -33,14 +33,14 @@ class Sektor:
 
     def get_locations(gps_data):
         print('ta chegando aqui')
-        if hasattr(gps_data, 'time'):
-            print(gps_data.time)
+        if 'time' in gps_data:
+            print(gps_data['time'])
 
-        if hasattr(gps_data, 'speed'):
+        if 'speed' in gps_data:
             return {
-                'latitude': gps_data.lat,
-                'longitude': gps_data.lon,
-                'speed': gps_data.speed,
+                'latitude': gps_data['lat'],
+                'longitude': gps_data['lon'],
+                'speed': gps_data['speed'],
             }
 
         return None
@@ -49,9 +49,9 @@ class Sektor:
         try:
             distance = Sektor.calc_distance(gps_data, last_location)
             location_data = {
-                'lat': gps_data.lat,
-                'lon': gps_data.lon,
-                'speed': gps_data.speed,
+                'lat': gps_data['lat'],
+                'lon': gps_data['lon'],
+                'speed': gps_data['speed'],
                 'distance': distance,
                 'oil': Sektor.do_grease(distance)
             }
