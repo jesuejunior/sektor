@@ -56,15 +56,15 @@ class Sektor:
     def save_location(gps_data, last_location):
         try:
             distance = Sektor.calc_distance(gps_data, last_location)
-            saved = DB.save(
-                lat=gps_data.lat,
-                lon=gps_data.lon,
-                speed=gps_data.speed,
-                distance=distance,
-                oil=Sektor.do_grease(gps_data)
-            )
+            location_data = {
+                'lat': gps_data.lat,
+                'lon': gps_data.lon,
+                'speed': gps_data.speed,
+                'distance': distance,
+                'oil': Sektor.do_grease(gps_data)
+            }
 
-            return saved
+            return location_data if DB.save(**location_data) else False
         except Exception:
             return False
 
@@ -73,9 +73,6 @@ class Sektor:
 
     def turn_on_motor(report):
         pass
-
-    def get_last_location():
-        return 2
 
     def calc_distance(coordinates1, coordinates2):
         """
