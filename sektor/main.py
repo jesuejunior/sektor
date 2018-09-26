@@ -1,12 +1,9 @@
 # encoding: utf-8
 from gps3 import gps3
 from math import radians, cos, sin, asin, sqrt
-from datetime import datetime
 import traceback
 
 from db import DB
-
-# FIX-ME: Convert this class into a classic OO and change to Position class
 
 
 class GPS:
@@ -46,10 +43,10 @@ class GPS:
         lon1, lat1, lon2, lat2 = map(
             radians,
             [
-                coordinates1.lon,
-                coordinates1.lat,
-                coordinates2.lon,
-                coordinates2.lat
+                float(coordinates1.lon),
+                float(coordinates1.lat),
+                float(coordinates2.lon),
+                float(coordinates2.lat)
             ],
         )
         # haversine formula
