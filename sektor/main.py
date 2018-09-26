@@ -1,41 +1,56 @@
 # encoding: utf-8
 from gps3 import gps3
 from math import radians, cos, sin, asin, sqrt
+from datetime import datetime
+import traceback
 
 from db import DB
 
 # FIX-ME: Convert this class into a classic OO and change to Position class
+
+
 class GPS:
-    def __init__(self, lat, lon, speed, time, distance=0, oil=False):
+    def __init__(
+            self, lat, lon,
+            speed, time, distance=0,
+            oil=False
+    ):
         self.lat = lat
+        self.lon = lon
         self.speed = speed
         self.distance = distance
         self.time = time
         self.oil = oil
 
     def get_locations(gps_data):
-        if hasattr(gps_data, "time"):
-            print(gps_data.time)
-            # FIXME: Must do something
-        if hasattr(gps_data, "speed"):
+        if "time" in gps_data:
+            print(gps_data["time"])
+
+        if "speed" in gps_data:
             return GPS(
-                lat=gps_data.lat,
-                lon=gps_data.lon,
-                speed=gps_data.speed,
-                time=gps_data.time,
+                lat=gps_data["lat"],
+                lon=gps_data["lon"],
+                speed=gps_data["speed"],
+                time=gps_data["time"],
             )
 
         return None
 
-    def calc_distance(coordinates1, coordinates2):
+    def calc_distance(coordinates1: 'GPS', coordinates2: 'GPS') -> float:
         """
         Calculate the great circle distance between two points
         on the earth (specified in decimal degrees)
         """
         # convert decimal degrees to radians
+
         lon1, lat1, lon2, lat2 = map(
             radians,
-            [coordinates1.lon, coordinates1.lat, coordinates2.lon, coordinates2.lat],
+            [
+                coordinates1.lon,
+                coordinates1.lat,
+                coordinates2.lon,
+                coordinates2.lat
+            ],
         )
         # haversine formula
         dlon = lon2 - lon1
@@ -49,6 +64,7 @@ class GPS:
         try:
             distance = GPS.calc_distance(gps_data, last_location)
             speed = gps_data.speed
+
             location_data = {
                 "lat": gps_data.lat,
                 "lon": gps_data.lon,
@@ -59,7 +75,9 @@ class GPS:
             }
 
             return GPS(**location_data) if DB.save(**location_data) else False
-        except Exception:
+        except Exception as err:
+            print('Could not save on database')
+            traceback.print_exc()
             return False
 
 
@@ -77,10 +95,11 @@ class Sektor:
         for new_data in gps_socket:
             if new_data:
                 print("getting new data...")
-                import ipdb; ipdb.set_trace()
+                # import ipdb
+                # ipdb.set_trace()
                 gps_stream.unpack(new_data)
-                current_location = GPS.get_locations(gps_stream)
-                #FIX-ME: Move to GPS class
+                current_location = GPS.get_locations(gps_stream.TPV)
+                # FIX-ME: Move to GPS class
                 saved_location = GPS.save_location(current_location, old_location)
 
                 if saved_location:
