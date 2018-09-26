@@ -63,13 +63,13 @@ class GPS:
     def save_location(gps_data, last_location):
         try:
             distance = GPS.calc_distance(gps_data, last_location)
-            speed = gps_data.speed
+            speed = int(gps_data.speed)
 
             location_data = {
+                "time": gps_data.time,
                 "lat": gps_data.lat,
                 "lon": gps_data.lon,
                 "speed": speed,
-                "time": gps_data.time,
                 "distance": distance,
                 "oil": Sektor.do_grease(distance, speed),
             }
@@ -83,6 +83,7 @@ class GPS:
 
 class Sektor:
     def start():
+        DB.init()
         gps_socket = gps3.GPSDSocket()
         gps_stream = gps3.DataStream()
 
