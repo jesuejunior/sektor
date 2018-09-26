@@ -3,7 +3,20 @@ from gps3 import gps3
 from math import radians, cos, sin, asin, sqrt
 import traceback
 
+import random
+from datetime import datetime
+
 from db import DB
+
+
+def fake_data():
+    while True:
+        yield {
+            "lat": random.random(),
+            "lon": random.random(),
+            "speed": random.random(),
+            "time": datetime.now()
+        }
 
 
 class GPS:
