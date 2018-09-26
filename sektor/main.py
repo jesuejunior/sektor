@@ -4,7 +4,7 @@ from math import radians, cos, sin, asin, sqrt
 
 from db import DB
 
-# FIX-ME: Convert this class into a classic OO
+# FIX-ME: Convert this class into a classic OO and change to Position class
 class GPS:
     def __init__(self, lat, lon, speed, time, distance=0, oil=False):
         self.lat = lat
@@ -77,15 +77,16 @@ class Sektor:
         for new_data in gps_socket:
             if new_data:
                 print("getting new data...")
+                import ipdb; ipdb.set_trace()
                 gps_stream.unpack(new_data)
                 current_location = GPS.get_locations(gps_stream)
-
+                #FIX-ME: Move to GPS class
                 saved_location = GPS.save_location(current_location, old_location)
 
                 if saved_location:
                     old_location = GPS(**saved_location.__dict__)
 
-    def do_grease(distancei, speed):
+    def do_grease(distance, speed):
         if distance > 300 and speed <= 20:
             Sektor.turn_on_motor()
             return True
