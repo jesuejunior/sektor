@@ -22,6 +22,22 @@ class DB:
             conn.close()
         return True
 
+    def find_last_position():
+        conn = DB.connect()
+        cursor = conn.cursor()
+        try:
+            result = cursor.execute(
+                """select * from track order by created_at DESC limit 1"""
+            )
+            return result if result else False
+        except Exception as ex:
+            print(ex)
+            return False
+        finally:
+            conn.close()
+
+        return True
+
     def find_last_oil():
         conn = DB.connect()
         cursor = cursor.execute("""SELECT * FROM track WHERE distance > 300 """)
