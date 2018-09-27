@@ -36,14 +36,15 @@ class Position:
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         c = 2 * asin(sqrt(a))
         r = 6371  # Radius of earth in kilometers. Use 3956 for miles
-        return c * r
+        # return c * r
+        return 1
 
     def save(self):
         try:
-            if self.distance >= 50:
+            if self.distance % 50 == 0:
                 return self if DB.save(**self.__dict__) else False
             else:
-                return False
+                return self
         except Exception as ex:
             print("Exception: ", ex)
             return False

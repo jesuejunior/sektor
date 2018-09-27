@@ -40,17 +40,28 @@ class Sektor:
                 ):
 
                     position = Position(
-                        data.TPV["lat"],
-                        data.TPV["lon"],
-                        data.TPV["speed"],
-                        data.TPV["time"],
+                        lat=data.TPV["lat"],
+                        lon=data.TPV["lon"],
+                        speed=data.TPV["speed"],
+                        time=data.TPV["time"],
                     )
                     distance = Position.calc_distance(position, last_position)
+
+                    position.distance = distance + last_position.distance
                     oil = Sektor.do_grease(distance, position.speed)
                     position.oil = oil
-                    saved_location = position.save()
-                    if saved_location:
-                        last_position = Position(**saved_location.__dict__)
+
+                    position.save()
+
+                    last_position = Position(**position.__dict__)
+
+                    last_position.distance += distance
+                    # print("Vindo do last position")
+                    # print(last_position.distance)
+
+                    # if saved_location:
+                    #     # last_position.distance +=
+
                 print("Done")
 
     def do_grease(distance, speed):
