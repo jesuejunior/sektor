@@ -40,7 +40,10 @@ class Position:
 
     def save(self):
         try:
-            return self if DB.save(**self.__dict__) else False
+            if self.distance >= 50:
+                return self if DB.save(**self.__dict__) else False
+            else:
+                return False
         except Exception as ex:
             print("Exception: ", ex)
             return False
