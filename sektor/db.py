@@ -15,23 +15,66 @@ class DB:
             cursor.execute(
                 """CREATE TABLE IF NOT EXISTS track (time INTEGER,
                 lat DOUBLE PRECISION, lon DOUBLE PRECISION,
-                speed INT, distance INT, oil BOOLEAN, created_at DATETIME)"""
+                speed INT, distance INT, oil BOOLEAN, created_at DATETIME)
+
+                CREATE TABLE IF NOT EXISTS km_for_oil (id INT AUTO_INCREMENT, 
+                counter INTEGER)
+                """
             )
             conn.commit()
         finally:
             conn.close()
         return True
 
+    def update_km_for_oil(distance):
+        conn = DB.connect()
+        cursor = conn.cursor()
+
+        try:
+            result = cursor.execute("""
+                UPDATE counter set 
+            """).fetchone()
+            return result[0] if result else False
+        except Exception as ex:
+            print("Exception: ", ex)
+            return False
+
+    def get_last_oil_counter():
+        conn = DB.connect()
+        cursor = conn.cursor()
+
+        try:
+            result = cursor.execute("""
+                SELECT counter FROM km_for_oil
+            """).fetchone()
+            return result[0] if result else False
+        except Exception as ex:
+            print("Exception: ", ex)
+            return False
+
     def find_last_position():
         conn = DB.connect()
         cursor = conn.cursor()
         try:
-            result = cursor.execute(
-                """select * from track order by created_at DESC limit 1"""
-            )
-            return result[0] if len(result) else False
+            result = cursor.execute("""
+                SELECT
+                    track. `time`,
+                    track.lat,
+                    track.lon,
+                    track.speed,
+                    track.distance,
+                    track.oil
+                FROM
+                    track
+                ORDER BY
+                    created_at DESC
+                LIMIT 1
+            """).fetchone()
+
+            return result if result else False
         except Exception as ex:
-            print(ex)
+            print("Exception on DB.find_last_position()")
+            print("Exception: ", ex)
             return False
         finally:
             conn.close()
@@ -54,7 +97,8 @@ class DB:
             )
             conn.commit()
         except Exception as ex:
-            print(ex)  # TO-DO: Use logger
+            print("Exception on DB.save()")
+            print("Exception: ", ex)  # TO-DO: Use logger
             return False
         finally:
             conn.close()

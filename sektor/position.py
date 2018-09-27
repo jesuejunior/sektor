@@ -5,7 +5,7 @@ from db import DB
 
 
 class Position:
-    def __init__(self, lat, lon, speed, time, oil=False, distance=0):
+    def __init__(self, time, lat, lon, speed, distance=0, oil=False):
         self.lat = lat
         self.lon = lon
         self.speed = int(speed)
@@ -43,17 +43,17 @@ class Position:
     def get_last():
         try:
             result = DB.find_last_position()
-            return Position(**result) if result else False
+            return Position(*result) if result else False
         except Exception as ex:
+            print("Exception on Position.get_last()")
             print("Exception: ", ex)
             return False
 
     def save(self):
         try:
-            if self.distance % 50 == 0:
-                return self if DB.save(**self.__dict__) else False
-            else:
-                return self
+            print("Current distance: ", self.distance)
+            return self if DB.save(**self.__dict__) else False
         except Exception as ex:
+            print("Exception on Position.save()")
             print("Exception: ", ex)
             return False

@@ -28,6 +28,8 @@ class Sektor:
 
         last_position = Position.get_last()
 
+        save_distance_counter = 0
+
         last_position = last_position if last_position else Position(
             lat=0, lon=0, speed=0, time=0
         )
@@ -52,24 +54,25 @@ class Sektor:
                     distance = Position.calc_distance(position, last_position)
 
                     position.distance = distance + last_position.distance
+                    save_distance_counter += distance
+
                     oil = Sektor.do_grease(distance, position.speed)
                     position.oil = oil
 
-                    position.save()
+                    if save_distance_counter >= 50:
+                        save_distance_counter = 0
+                        print("Saved for 50 meters")
+                        position.save()
 
                     last_position = Position(**position.__dict__)
-
-                    last_position.distance += distance
-                    # print("Vindo do last position")
-                    # print(last_position.distance)
-
                     # if saved_location:
                     #     # last_position.distance +=
 
                 print("Done")
 
     def do_grease(distance, speed):
-        if distance > 300 and speed <= 20:
+        # 300000 is 300KM
+        if (distance % 300000 == 0) and speed <= 20:
             Sektor.turn_on_motor()
             return True
         else:
