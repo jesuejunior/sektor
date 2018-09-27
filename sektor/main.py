@@ -3,6 +3,7 @@ import random
 from datetime import datetime
 from gps3 import gps3
 
+from db import DB
 from position import Position
 
 
@@ -18,6 +19,7 @@ def fake_data():
 
 class Sektor:
     def start():
+        DB.init()
         gps_socket = gps3.GPSDSocket()
         data = gps3.DataStream()
 
