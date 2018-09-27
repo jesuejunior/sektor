@@ -38,7 +38,7 @@ class Position:
         r = 6371  # Radius of earth in kilometers. Use 3956 for miles
         return c * r
 
-    def save(self, last_location):
+    def save(self):
         try:
             return self if DB.save(**self.__dict__) else False
         except Exception as ex:

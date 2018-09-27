@@ -18,7 +18,6 @@ def fake_data():
 
 class Sektor:
     def start():
-        DB.init()
         gps_socket = gps3.GPSDSocket()
         data = gps3.DataStream()
 
@@ -44,10 +43,10 @@ class Sektor:
                         data.TPV["speed"],
                         data.TPV["time"],
                     )
-                    distance = Position.calc_distance(position, last_location)
+                    distance = Position.calc_distance(position, last_position)
                     oil = Sektor.do_grease(distance, position.speed)
                     position.oil = oil
-                    saved_location = position.save(last_position)
+                    saved_location = position.save()
                     if saved_location:
                         last_position = Position(**saved_location.__dict__)
                 print("Done")
