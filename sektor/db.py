@@ -29,7 +29,7 @@ class DB:
             result = cursor.execute(
                 """select * from track order by created_at DESC limit 1"""
             )
-            return result if result else False
+            return result[0] if len(result) else False
         except Exception as ex:
             print(ex)
             return False

@@ -39,6 +39,15 @@ class Position:
         # return c * r
         return 1
 
+    @staticmethod
+    def get_last():
+        try:
+            result = DB.find_last_position()
+            return Position(**result) if result else False
+        except Exception as ex:
+            print("Exception: ", ex)
+            return False
+
     def save(self):
         try:
             if self.distance % 50 == 0:

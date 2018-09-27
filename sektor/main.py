@@ -26,7 +26,11 @@ class Sektor:
         gps_socket.connect()
         gps_socket.watch()
 
-        last_position = Position(lat=0, lon=0, speed=0, time=0)
+        last_position = Position.get_last()
+
+        last_position = last_position if last_position else Position(
+            lat=0, lon=0, speed=0, time=0
+        )
 
         # TO-DO: Will it work forever?
         for new_data in gps_socket:
