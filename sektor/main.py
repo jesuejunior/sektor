@@ -1,10 +1,8 @@
 # encoding: utf-8
-from gps3 import gps3
-from math import radians, cos, sin, asin, sqrt
-import traceback
-
 import random
+from math import radians, cos, sin, asin, sqrt
 from datetime import datetime
+from gps3 import gps3
 
 from db import DB
 
@@ -15,38 +13,21 @@ def fake_data():
             "lat": random.random(),
             "lon": random.random(),
             "speed": random.random(),
-            "time": datetime.now()
+            "time": datetime.now(),
         }
 
 
-class GPS:
-    def __init__(
-            self, lat, lon,
-            speed, time, distance=0,
-            oil=False
-    ):
+class Position:
+    def __init__(self, lat, lon, speed, time, distance=0, oil=False):
         self.lat = lat
         self.lon = lon
-        self.speed = speed
+        self.speed = int(speed)
         self.distance = distance
         self.time = time
         self.oil = oil
 
-    def get_locations(gps_data):
-        if "time" in gps_data:
-            print(gps_data["time"])
-
-        if "speed" in gps_data:
-            return GPS(
-                lat=gps_data["lat"],
-                lon=gps_data["lon"],
-                speed=gps_data["speed"],
-                time=gps_data["time"],
-            )
-
-        return None
-
-    def calc_distance(coordinates1: 'GPS', coordinates2: 'GPS') -> float:
+    @staticmethod
+    def calc_distance(coordinates1: "Position", coordinates2: "Position") -> float:
         """
         Calculate the great circle distance between two points
         on the earth (specified in decimal degrees)
@@ -59,7 +40,7 @@ class GPS:
                 float(coordinates1.lon),
                 float(coordinates1.lat),
                 float(coordinates2.lon),
-                float(coordinates2.lat)
+                float(coordinates2.lat),
             ],
         )
         # haversine formula
@@ -70,24 +51,14 @@ class GPS:
         r = 6371  # Radius of earth in kilometers. Use 3956 for miles
         return c * r
 
-    def save_location(gps_data, last_location):
+    def save(self, last_location):
         try:
-            distance = GPS.calc_distance(gps_data, last_location)
-            speed = int(gps_data.speed)
-
-            location_data = {
-                "time": gps_data.time,
-                "lat": gps_data.lat,
-                "lon": gps_data.lon,
-                "speed": speed,
-                "distance": distance,
-                "oil": Sektor.do_grease(distance, speed),
-            }
-
-            return GPS(**location_data) if DB.save(**location_data) else False
-        except Exception as err:
-            print('Could not save on database')
-            traceback.print_exc()
+            distance = Position.calc_distance(self, last_location)
+            self.distance = distance
+            self.oil = Sektor.do_grease(distance, self.speed)
+            return self if DB.save(**self.__dict__) else False
+        except Exception as ex:
+            print("Exception: ", ex)
             return False
 
 
@@ -95,12 +66,12 @@ class Sektor:
     def start():
         DB.init()
         gps_socket = gps3.GPSDSocket()
-        gps_stream = gps3.DataStream()
+        data = gps3.DataStream()
 
         gps_socket.connect()
         gps_socket.watch()
 
-        old_location = GPS(lat=0, lon=0, speed=0, time=0)
+        last_position = Position(lat=0, lon=0, speed=0, time=0)
 
         # TO-DO: Will it work forever?
         for new_data in gps_socket:
@@ -108,13 +79,20 @@ class Sektor:
                 print("getting new data...")
                 # import ipdb
                 # ipdb.set_trace()
-                gps_stream.unpack(new_data)
-                current_location = GPS.get_locations(gps_stream.TPV)
-                # FIX-ME: Move to GPS class
-                saved_location = GPS.save_location(current_location, old_location)
-
-                if saved_location:
-                    old_location = GPS(**saved_location.__dict__)
+                data.unpack(new_data)
+                if isinstance(data.TPV.get("lat"), float) and isinstance(
+                    data.TPV.get("lon"), float
+                ):
+                    position = Position(
+                        data.TPV["lat"],
+                        data.TPV["lon"],
+                        data.TPV["speed"],
+                        data.TPV["time"],
+                    )
+                    saved_location = position.save(last_position)
+                    if saved_location:
+                        last_position = Position(**saved_location.__dict__)
+                print("Done")
 
     def do_grease(distance, speed):
         if distance > 300 and speed <= 20:
@@ -124,6 +102,7 @@ class Sektor:
             return False
 
     def turn_on_motor():
+        print("Starting motor 1")
         return False
 
 
