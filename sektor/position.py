@@ -14,7 +14,7 @@ class Position:
         self.oil = oil
 
     @staticmethod
-    def calc_distance(coordinates1: "Position", coordinates2: "Position") -> float:
+    def distance(coordinates1: "Position", coordinates2: "Position") -> float:
         """
         Calculate the great circle distance between two points
         on the earth (specified in decimal degrees)
@@ -36,8 +36,7 @@ class Position:
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         c = 2 * asin(sqrt(a))
         r = 6371  # Radius of earth in kilometers. Use 3956 for miles
-        # return c * r
-        return 1
+        return c * r
 
     @staticmethod
     def get_last():

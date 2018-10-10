@@ -31,9 +31,11 @@ class DB:
         cursor = conn.cursor()
 
         try:
-            result = cursor.execute("""
+            result = cursor.execute(
+                """
                 UPDATE counter set 
-            """).fetchone()
+            """
+            ).fetchone()
             return result[0] if result else False
         except Exception as ex:
             print("Exception: ", ex)
@@ -44,9 +46,11 @@ class DB:
         cursor = conn.cursor()
 
         try:
-            result = cursor.execute("""
+            result = cursor.execute(
+                """
                 SELECT counter FROM km_for_oil
-            """).fetchone()
+            """
+            ).fetchone()
             return result[0] if result else False
         except Exception as ex:
             print("Exception: ", ex)
@@ -56,7 +60,8 @@ class DB:
         conn = DB.connect()
         cursor = conn.cursor()
         try:
-            result = cursor.execute("""
+            result = cursor.execute(
+                """
                 SELECT
                     track. `time`,
                     track.lat,
@@ -69,7 +74,8 @@ class DB:
                 ORDER BY
                     created_at DESC
                 LIMIT 1
-            """).fetchone()
+            """
+            ).fetchone()
 
             return result if result else False
         except Exception as ex:
