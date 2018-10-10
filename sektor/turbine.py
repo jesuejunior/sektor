@@ -4,7 +4,7 @@ from gpiozero import PWMOutputDevice
 
 
 class Turbine:
-    def wipe():
+    def clean():
         # PARAMS:  pin, *, active_high=True, initial_value=0, frequency=100, pin_factory=None
         print("Starting cleaning time")
         with PWMOutputDevice(23) as motor:

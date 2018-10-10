@@ -14,26 +14,24 @@ class Position:
         self.oil = oil
 
     @staticmethod
-    def distance(coordinates1: "Position", coordinates2: "Position") -> float:
+    def distance(actual: "Position", last: "Position") -> float:
         """
         Calculate the great circle distance between two points
         on the earth (specified in decimal degrees)
         """
         # convert decimal degrees to radians
 
-        lon1, lat1, lon2, lat2 = map(
+        actual_longitude, actual_latitude, last_longitude, last_latitude = map(
             radians,
-            [
-                float(coordinates1.lon),
-                float(coordinates1.lat),
-                float(coordinates2.lon),
-                float(coordinates2.lat),
-            ],
+            [float(actual.lon), float(actual.lat), float(last.lon), float(last.lat)],
         )
         # haversine formula
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        dlon = last_longitude - actual_longitude
+        dlat = last_latitude - actual_latitude
+        a = (
+            sin(dlat / 2) ** 2
+            + cos(actual_latitude) * cos(last_latitude) * sin(dlon / 2) ** 2
+        )
         c = 2 * asin(sqrt(a))
         r = 6371  # Radius of earth in kilometers. Use 3956 for miles
         return c * r

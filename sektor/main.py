@@ -73,6 +73,12 @@ class Sektor:
         else:
             return False
 
+    def janitor():
+        print("Starting janitor")
+        Turbine.clean()
+        time.sleep(10)
+        Turbine.oil()
+
 
 if __name__ == "__main__":
     Sektor.start()
