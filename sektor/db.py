@@ -16,7 +16,12 @@ class DB:
                 """CREATE TABLE IF NOT EXISTS track (time INTEGER,
                 lat DOUBLE PRECISION, lon DOUBLE PRECISION,
                 speed INT, distance INT, oil BOOLEAN, created_at DATETIME)
+                """
+            )
+            conn.commit()
 
+            cursor.execute(
+                """
                 CREATE TABLE IF NOT EXISTS km_for_oil (id INT AUTO_INCREMENT, 
                 counter INTEGER)
                 """
