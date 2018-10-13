@@ -16,7 +16,7 @@ setup(
     author_email="jesuesousa@gmail.com",
     url="https://github.com/jesuejunior/sektor",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=["gps3==0.33.3", "gpiozero==1.4.1"],
     test_suite="tests",
     tests_require=["tox>=3.3.0", "pytest==3.8.0", "pytest-cov==2.6.0"]
     + (["mock==2.0.0"] if sys.version_info.major == 2 else []),
