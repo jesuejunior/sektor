@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-#aiohttp = "==3.3.0"
+gpiozero = "==1.4.1"
+gps3 = "==0.33.3"
 
 [dev-packages]
 ipdb = "==0.11"
@@ -16,4 +17,4 @@ black = "==18.6b4"
 
 
 [requires]
-python_version = "3.6"
+python_version = "3.5"
