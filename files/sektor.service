@@ -1,0 +1,14 @@
+[Unit]
+Description=Sektor Robot
+
+[Service]
+Type=simple
+User=root
+Group=wheel
+Restart=always
+ExecStartPre=/bin/mkdir -p /var/run/sektor && stty -F /dev/ttyS0 9600 && gpsd /dev/ttyS0 -F /var/run/gpsd.socket
+PIDFile=/var/run/sektor/service.pid
+ExecStart=cd /code/sektor; /usr/bin/python3 sektor/main.py
+
+[Install]
+WantedBy=multi-user.target
