@@ -2,17 +2,23 @@
 ip=$1
 
 conn="ssh pi@$ip"
+DIR="/opt/sektor"
 
-${conn} 'sudo apt-get update && sudo apt-get install --yes python3-pip build-essential rsync && sudo pip3 install pipenv'
+echo "Installing and configure packages and directories"
+${conn} "sudo apt-get update \
+    && sudo apt-get install --yes python3-pip build-essential rsync \
+    && sudo pip3 install pipenv \
+    && sudo mkdir -p $DIR \
+    && sudo chmod -R 775 $DIR \
+    && sudo chown pi -R $DIR"
 
-rsync -rav ../sektor pi@$ip:~/code/sektor
+echo "Starting project sync"
+rsync -rav --delete  ../sektor pi@$ip:/opt/
+echo "Sync is done"
 
-${conn} 'cd /code/sektor; sudo pipenv --python /usr/bin/python3 install && sudo chmod +x /code/sektor/sektor/main.py'
+echo "Preparing project, installing dependencies using pipenv "
+${conn} "cd /opt/sektor; sudo pipenv --python /usr/bin/python3 install && sudo chmod +x /opt/sektor/sektor/main.py"
 
-# Configuring port boudrate and starting gpsddeamon
-#${conn} 'stty -F /dev/ttyS0 9600 && sudo gpsd /dev/ttyS0 -F /var/run/gpsd.socket'
-
-
-${conn} 'sudo cp /code/sektor/files/sektor.service /lib/systemd/system/sektor.service && sudo systemctl daemon-reload && sudo systemctl enable sektor.service'
-
+echo "Adding sektor as a service to start on boot"
+${conn} "sudo cp -f /opt/sektor/files/sektor.service /lib/systemd/system/sektor.service && sudo systemctl daemon-reload && sudo systemctl enable sektor.service"
 
