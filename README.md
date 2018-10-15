@@ -1,5 +1,21 @@
 # sektor
 
+
+### Preparing environment
+
+Install pipenv
+
+```shell
+    pip3 install pipenv
+```
+
+Install dependencies
+
+```shell
+    pipenv --python `which python3` install
+```
+
+
 To start the gpsd module run:
 
 ```
