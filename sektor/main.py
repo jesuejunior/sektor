@@ -1,26 +1,18 @@
 # encoding: utf-8
 import random
+import time
 from datetime import datetime
 from gps3 import gps3
+from gpiozero import Button
 
 from db import DB
 from position import Position
 from turbine import Turbine
-
-
-def fake_data():
-    while True:
-        yield {
-            "lat": random.random(),
-            "lon": random.random(),
-            "speed": random.random(),
-            "time": datetime.now(),
-        }
+from const import HOLD_TIME
 
 
 class Sektor:
-    def start():
-        DB.init()
+    def track():
         gps_socket = gps3.GPSDSocket()
         data = gps3.DataStream()
 
@@ -28,9 +20,7 @@ class Sektor:
         gps_socket.watch()
 
         last_position = Position.get_last()
-
         distance_measure = 0
-
         last_position = (
             last_position if last_position else Position(lat=0, lon=0, speed=0, time=0)
         )
@@ -50,9 +40,8 @@ class Sektor:
                         time=data.TPV["time"],
                     )
                     distance_now = Position.distance(position, last_position)
-
-                    position.distance = distance_now + last_position.distance
                     distance_measure += distance_now
+                    position.distance = distance_now + last_position.distance
 
                     position.oil = Sektor.do_grease(distance_now, position.speed)
 
@@ -73,12 +62,24 @@ class Sektor:
         else:
             return False
 
-    def janitor():
-        print("Starting janitor")
-        Turbine.clean()
-        time.sleep(10)
-        Turbine.oil()
+    def run():
+        DB.init()
+        degreaer = Button(21)
+        degreaer.wait_for_press(HOLD_TIME)
+        oil = Button(13)
+        oil.wait_for_press(HOLD_TIME)
+        time.sleep(30)
+
+        print("########### degreaer: ", degreaer)
+        print("@@@@@@@@@@@ oil: ", oil)
+
+        if oil:
+            Turbine.oil()
+        if degreaer:
+            Turbine.clean()
+        else:
+            Sektor.track()
 
 
 if __name__ == "__main__":
-    Sektor.start()
+    Sektor.run()
