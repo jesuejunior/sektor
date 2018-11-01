@@ -73,9 +73,9 @@ class Sektor:
         print("########### degreaer: ", degreaer)
         print("@@@@@@@@@@@ oil: ", oil)
 
-        if oil:
+        if oil.is_pressed:
             Turbine.oil()
-        if degreaer:
+        if degreaer.is_pressed:
             Turbine.clean()
         else:
             Sektor.track()
