@@ -61,17 +61,22 @@ class Sektor:
             return True
         else:
             return False
-
+    
     def run():
         DB.init()
-        degreaer = Button(21)
-        degreaer.wait_for_press(HOLD_TIME)
-        oil = Button(13)
-        oil.wait_for_press(HOLD_TIME)
-        time.sleep(30)
 
-        print("########### degreaer: ", degreaer)
-        print("@@@@@@@@@@@ oil: ", oil)
+        degreaer = Button(5)
+        print("Waiting for instructions about if I should apply kerosene or not")
+        degreaer.wait_for_press(HOLD_TIME)
+
+        oil = Button(13)
+        print("Waiting for instructions about if I should apply oil or not")
+        oil.wait_for_press(HOLD_TIME)
+        # time.sleep(30)
+        
+        oil.when_activated("die")
+        print("########### degreaer: ", degreaer.__dict__)
+        print("@@@@@@@@@@@ oil: ", oil.values, oil.is_pressed,  oil.when_released, oil.when_activated, oil.when_pressed)
 
         if oil.is_pressed:
             Turbine.oil()
