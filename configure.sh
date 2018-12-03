@@ -13,7 +13,7 @@ ${conn} "sudo apt-get update \
     && sudo chown pi -R $DIR"
 
 echo "Starting project sync"
-rsync -rav --delete  ../sektor pi@$ip:/opt/
+rsync -rav --delete --exclude ".git"  ../sektor pi@$ip:/opt/
 echo "Sync is done"
 
 echo "Preparing project, installing dependencies using pipenv "

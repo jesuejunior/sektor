@@ -6,9 +6,11 @@ Type=simple
 User=root
 Group=wheel
 Restart=always
-ExecStartPre=/bin/mkdir -p /var/run/sektor && stty -F /dev/ttyS0 9600 && gpsd /dev/ttyS0 -F /var/run/gpsd.socket
+ExecStartPre=stty -F /dev/ttyS0 9600 && gpsd /dev/ttyS0 -F /var/run/gpsd.socket
 PIDFile=/var/run/sektor/service.pid
-ExecStart=/bin/cd /opt/sektor; /usr/bin/python3 sektor/main.py
+ExecStart=/opt/sektor/boot.sh start
+ExecStop=/opt/sektor/boot.sh stop
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
